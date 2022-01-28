@@ -6,7 +6,7 @@ from xmlrpc.client import boolean
 from pymongo import MongoClient, errors
 
 # global variables for MongoDB host (default port is 27017)
-DOMAIN = '172.18.0.2'
+DOMAIN = '172.20.0.2'
 PORT = 27017
 
 
@@ -99,20 +99,20 @@ def main():
     fetch_new(collection)
 
     # test store messages
-    # store(collection, "kk@gmail.com", "Ground control to major tom.")
-    # store(collection, "kk@gmail.com", "Houston we have a problem.")
-    # store(collection, "Kosmo Kramer", "Giddyup!")
-    # store(collection, "Kosmo Kramer", "Oolala!")
-    # store(collection, "Kosmo Kramer", "Newman!")
-    # store(collection, "1234567890", "I know what you did last summer.")
-    # fetch_new(collection)
+    store(collection, "kk@gmail.com", "Ground control to major tom.")
+    store(collection, "kk@gmail.com", "Houston we have a problem.")
+    store(collection, "Kosmo Kramer", "Giddyup!")
+    store(collection, "Kosmo Kramer", "Oolala!")
+    store(collection, "Kosmo Kramer", "Newman!")
+    store(collection, "1234567890", "I know what you did last summer.")
+    fetch_new(collection)
 
     # test delete single message
     # delete_single(collection, "I know what you did last summer.")
     # fetch_new(collection)
 
     # mark message as old and check fetch new if updated
-    # mark_old(collection, "Oolala!", "Kosmo Kramer")
+    mark_old(collection, "Oolala!", "Kosmo Kramer")
     fetch_new(collection)
     fetch_all(collection)
 
