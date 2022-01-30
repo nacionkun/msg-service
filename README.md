@@ -2,7 +2,7 @@
 
 A simple message handling service built with python, flask, and mongodb
 
-# Create environment
+# Create docker container to test the service
 
 cd msg-service
 
@@ -72,3 +72,15 @@ curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/
 # Limitations
 
 See limitations.txt file.
+
+
+# Development environment
+
+Ubuntu 18.04.5 LTS  (WSL2)
+
+Docker Engine 20.10.12
+
+Docker Compose v2.2.3
+
+
+
