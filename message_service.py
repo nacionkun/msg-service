@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
-# import the MongoClient class
-from xmlrpc.client import boolean
 from pymongo import MongoClient, errors
 from bson.json_util import dumps
-import json
 
 from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-# global variables for MongoDB host (default port is 27017)
-DOMAIN = '172.20.0.2'
+# Global variables for MongoDB host (default port is 27017)
+# DOMAIN = '172.19.0.2'
+DOMAIN = 'localhost'
 PORT = 27017
 
 client = MongoClient(
@@ -31,20 +29,20 @@ collection = db.collection
 
 @app.route('/')
 def root():
-    return 'MESSAGE SERVICE'
+    return 'MESSAGE SERVICE\n'
 
 
 def mark_old(message, recipient):
-    present_record = collection.find_one({"message" : message}, 
-                                         {"recipient" : recipient})
-    new_record = {'$set':{"new_state" : False}}                                   
+    present_record = collection.find_one({"message": message}, 
+                                         {"recipient": recipient})
+    new_record = {'$set':{"new_state": False}}                                   
     collection.update_one(present_record, new_record)
     
 
 def mark_new(message, recipient):
-    present_record = collection.find_one({"message" : message}, 
-                                         {"recipient" : recipient})
-    new_record = {'$set':{"new_state" : True}}                                   
+    present_record = collection.find_one({"message": message}, 
+                                         {"recipient": recipient})
+    new_record = {'$set':{"new_state": True}}                                   
     collection.update_one(present_record, new_record)
 
  
@@ -53,13 +51,16 @@ def delete_single():
     request_json = request.get_json()
     
     if request_json == None:
-        return jsonify({'error':"No valid JSON body sent."})
+        return jsonify({'Error':"No valid JSON body sent."})
 
-    print(request_json)
+    message_str = request_json['message']
 
-    collection.delete_one({"message" : request_json['message']})
+    if not message_str:
+        return "Please enter message to delete.\n"
 
-    return "Message deleted."
+    collection.delete_one({"message": request_json['message']})
+
+    return "(Single) message delete function executed.\n"
 
 
 @app.route('/messages/delete/multiple', methods=['POST'])
@@ -67,13 +68,16 @@ def delete_multiple():
     request_json = request.get_json()
     
     if request_json == None:
-        return jsonify({'error':"No valid JSON body sent."})
+        return jsonify({'Error':"No valid JSON body sent."})
 
-    print(request_json)
+    recipient_str = request_json['recipient']
 
-    collection.delete_many({"recipient" : request_json['recipient']})
+    if not recipient_str:
+        return "Please specify recipient to delete multiple messages.\n"
 
-    return "Messages deleted."
+    collection.delete_many({"recipient": request_json['recipient']})
+
+    return "(Multiple) messages delete function executed.\n"
 
 
 @app.route('/messages/send', methods=['POST'])
@@ -81,15 +85,26 @@ def store_message():
     request_json = request.get_json()
     
     if request_json == None:
-        return jsonify({'error':"No valid JSON body sent."})
+        return jsonify({'Error':"No valid JSON body sent."})
+
+    recipient_str = request_json['recipient']
+    message_str = request_json['message']
+
+    if not recipient_str:
+        return "Please specify recipient!\n"
+        
+    if not message_str:
+        return "Empty message. Please enter valid message!\n"
 
     message_record = {
-        "message" : request_json['message'],
-        "recipient" : request_json['recipient'],
-        "new_state" : True
+        "message": request_json['message'],
+        "recipient": request_json['recipient'],
+        "new_state": True
     }
+
     collection.insert_one(message_record)
-    return "Message sent."
+
+    return "Message sent.\n"
     
     
 @app.route('/messages')
@@ -109,13 +124,15 @@ def fetch_all():
 def fetch_new():
     print("Listing new messages:")
 
-    ret_cur = collection.find({"new_state" : True})
+    ret_cur = collection.find({"new_state": True})
 
     list_cur = list(ret_cur)
 
+    # json_data = dumps(list_cur, indent = 2)
     json_data = dumps(list_cur, indent = 2)
 
-    # TODO: Mark as OLD the newly fetched messages
+    # TODO: Mark new messages as OLD after fetch
+    # TODO: Fetch messages ordered by time (or ObjectId index)
 
     return json_data
 
