@@ -1,39 +1,74 @@
-# message-service
+# Message Service
 
-MessagingService in Python
+A simple message handling service built with python, flask, and mongodb
 
-> message_service.py
+# Create environment
 
-## Flask-MongoDB-Docker container environment
-
-### Terminal 1
+cd msg-service
 
 docker-compose up --build
 
-docker inspect msg-service-py-mongo-1
+---
 
-docker cp message_service.py msg-service-py-mongo-1:/app
+# Running the service
+
+## Open new terminal and login to environment
 
 docker exec -it msg-service-py-mongo-1 /bin/bash
+
+## Run with Flask
 
 export FLASK_APP=message_service.py
 
 flask run
 
+---
+
+# API
+
+## Open new terminal to test API
+
 docker exec -it msg-service-py-mongo-1 /bin/bash
 
+---
 
-#### Test curl commands 
+## Read root
 
 curl -v http://127.0.0.1:5000/
 
+## Get all messages
+
 curl -v http://127.0.0.1:5000/messages
+
+## Get new messages
 
 curl -v http://127.0.0.1:5000/messages/new
 
+---
+
+## Send message samples
+
 curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/send -d '{"message":"test message", "recipient":"george costanza"}'
+
+curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/send -d '{"message":"giddyup!", "recipient":"george costanza"}'
+
+curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/send -d '{"message":"I know what you did last summer", "recipient":"112233445566"}'
+
+curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/send -d '{"message":"Good morning!", "recipient":"kk@gmail.com"}'
+
+---
+
+## Delete multiple messages (using recipient key)
 
 curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/delete/multiple -d '{"recipient":"george costanza"}'
 
-curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/delete/single -d '{"message":"test message"}'
+---
+## Delete a single message (using message key)
 
+curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/messages/delete/single -d '{"message":"Good morning!"}'
+
+---
+
+# Limitations
+
+See limitations.txt file.

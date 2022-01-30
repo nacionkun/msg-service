@@ -1,0 +1,9 @@
+Limitations
+
+- need to split into classes: mongodb data adapter and flask app
+- class split would be better scenario to mock mongodb and unit test flask app
+- unit tests and rest api tests not created
+- single message delete limited only to message selection
+- fetch message/s function not ordered
+- package versions requirements (in dockerfile) are not version specific
+- running flask app is not automated

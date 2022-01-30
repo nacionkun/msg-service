@@ -124,15 +124,21 @@ def fetch_all():
 def fetch_new():
     print("Listing new messages:")
 
-    ret_cur = collection.find({"new_state": True})
+    ret_cur = collection.find({ "new_state": True })
 
     list_cur = list(ret_cur)
-
-    # json_data = dumps(list_cur, indent = 2)
+    # TODO: Fetch messages ordered by time (or ObjectId index)
     json_data = dumps(list_cur, indent = 2)
 
-    # TODO: Mark new messages as OLD after fetch
-    # TODO: Fetch messages ordered by time (or ObjectId index)
+    result = collection.update_many( 
+                {
+                    "new_state": True
+                },
+                {
+                    "$set": { "new_state" : False }
+                }
+    )
+    print ("Messages updated: ", result.matched_count)
 
     return json_data
 
